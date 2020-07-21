@@ -1,16 +1,18 @@
 package eu.bunburya.hexify.model
 
 import eu.bunburya.hexagons.Hex
+import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import javafx.scene.paint.Color
 
-class Hexifier(val writableImage: WritableImage, val config: Config) {
+class Hexifier(inputImage: Image, val config: Config) {
 
-    private val imageWidth = writableImage.width.toInt()
-    private val imageHeight = writableImage.height.toInt()
+    private val imageWidth = inputImage.width.toInt()
+    private val imageHeight = inputImage.height.toInt()
+    private val writableImage = WritableImage(inputImage.pixelReader, imageWidth, imageHeight)
     val hexOverlay = HexOverlay(imageWidth, imageHeight, config.hexSize)
 
-    fun hexify() {
+    fun hexify(): Image {
         val reader = writableImage.pixelReader
         val writer = writableImage.pixelWriter
         val emptyColor = Color(0.0, 0.0, 0.0, 0.0)
@@ -34,8 +36,9 @@ class Hexifier(val writableImage: WritableImage, val config: Config) {
                 hexAgg.add(color)
             }
         }
+
         for (entry in rgbValues) {
-            // go through list of collected colors and get average
+            // go through list of collected colors and get aggregate
             hex = entry.key
             hexAgg = entry.value
             aggregates[hex] = hexAgg.aggregateColor
@@ -57,5 +60,6 @@ class Hexifier(val writableImage: WritableImage, val config: Config) {
                 }
             }
         }
+        return writableImage
     }
 }

@@ -18,11 +18,11 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-
 class MainController: Controller() {
 
+    private val imageController: ImageController by inject()
+
     private val mainView: MainView by inject()
-    private val dualImageView: DualImageView by inject()
     private val configView: ConfigView by inject()
 
     val userConfig = Config()
@@ -30,25 +30,6 @@ class MainController: Controller() {
     val availableFilters = Filter.availableFilters
 
     var currentFile: String? = null
-
-    var imageWidth = 0
-    var imageHeight = 0
-    lateinit var outputImage: WritableImage
-    lateinit var hexifier: Hexifier
-    var inputImage: Image? = null
-        set(new: Image?) {
-            field = new
-            if (new == null) {
-                imageWidth = 0
-                imageHeight = 0
-                outputImage = WritableImage(0, 0)
-            } else {
-                imageWidth = new.width.toInt()
-                imageHeight = new.height.toInt()
-                outputImage = WritableImage(new.pixelReader, imageWidth, imageHeight)
-            }
-            hexifier = Hexifier(outputImage, userConfig)
-        }
 
     val validFileTypes = arrayOf(
         FileChooser.ExtensionFilter("All", "*.bmp", "*.gif", "*.jpeg", "*.jpg", "*.png"),
@@ -71,63 +52,36 @@ class MainController: Controller() {
         return null
     }
 
-    fun chooseImage() {
-        val fileList = chooseFile("Choose an image to load.", filters=validFileTypes)
+    fun openFile() {
+        val fileList = chooseFile("Choose a image to load.", filters=validFileTypes)
         if (fileList.isNotEmpty()) {
-            loadImage(fileList[0].toURI().toString())
+            imageController.loadImage(fileList[0].toURI().toString())
         }
     }
 
-    fun loadImage(file: String? = currentFile) {
-        if (file == null) {
-            return
-        }
-        inputImage = Image(file)
-        clearAll()
-        dualImageView.showInputImage()
-        dualImageView.showOutputImage()
-        currentFile = file
-    }
-
-    fun saveImage() {
-        val fileList = chooseFile("Choose save location.", filters=validFileTypes, mode = FileChooserMode.Save)
+    fun saveFile() {
+        val fileList = chooseFile("Choose save location.", filters=validFileTypes,
+            mode = FileChooserMode.Save)
         if (fileList.isNotEmpty()) {
-            writeImage(fileList[0].toURI().toString())
+            imageController.writeImage(fileList[0].toURI().toString())
         }
     }
 
-    fun writeImage(fileName: String? = currentFile) {
-        if (fileName == null) {
-            return
-        }
-        var bufferedImage = SwingFXUtils.fromFXImage(outputImage, null)
-        val fileType = getFileType(fileName)
-        if (fileType == "jpg" || fileType == "jpeg") {
-            bufferedImage = removeTransparency(bufferedImage)
-        }
-        val file = File(fileName.removePrefix("file:"))
-        file.createNewFile()
-        ImageIO.write(bufferedImage, fileType, file)
+    fun rerun() {
+        imageController.loadImage()
     }
 
-    fun removeTransparency(input: BufferedImage): BufferedImage {
-        val width = input.width
-        val height = input.height
-        val pixels = IntArray(width * height)
-        input.getRGB(0, 0, width, height, pixels, 0, width)
-        val output = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-        output.setRGB(0, 0, width, height, pixels, 0, width)
-        return output
-    }
-
-    fun clearAll() {
-        dualImageView.clearInputImage()
-        dualImageView.clearOutputImage()
-        currentFile = null
+    fun hexify() {
+        imageController.hexify()
     }
 
     fun launchConfig() {
         configView.openWindow()
+    }
+
+    fun clearAll() {
+        imageController.clearAll()
+        currentFile = null
     }
 
     fun quit() {

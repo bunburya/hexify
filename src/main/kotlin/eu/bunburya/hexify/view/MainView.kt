@@ -1,13 +1,6 @@
 package eu.bunburya.hexify.view
 
 import eu.bunburya.hexify.controller.MainController
-import javafx.scene.Group
-import javafx.scene.Node
-import javafx.scene.control.ScrollPane
-import javafx.scene.image.Image
-import javafx.scene.image.WritableImage
-import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
 import tornadofx.*
 
 class MainView : View("Hexify") {
@@ -19,7 +12,7 @@ class MainView : View("Hexify") {
             hbox {
                 button("Open file") {
                     action {
-                        mainController.chooseImage()
+                        mainController.openFile()
                     }
                 }
                 button("Clear") {
@@ -32,14 +25,20 @@ class MainView : View("Hexify") {
                         mainController.launchConfig()
                     }
                 }
+                button("Hexify") {
+                    action {
+                        mainController.hexify()
+                    }
+                }
+                // TODO:  Change this to "Hexify"
                 button("Re-run") {
                     action {
-                        mainController.loadImage()
+                        mainController.rerun()
                     }
                 }
                 button("Save image") {
                     action {
-                        mainController.saveImage()
+                        mainController.saveFile()
                     }
                 }
                 button("Quit") {
@@ -50,7 +49,10 @@ class MainView : View("Hexify") {
             }
         }
 
-        center(DualImageView::class)
+        center(ImageContainerView::class)
+        //center(InputImageView::class)
+
+        bottom(StatusBarView::class)
 
     }
 

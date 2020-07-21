@@ -5,7 +5,11 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
-class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10, val hexOrientation: LayoutOrientation = LAYOUT_FLAT, hexOffset: Offset = Offset.EVEN) {
+/**
+ * A visible set of hexagons that can overlay an image.
+ */
+class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10,
+                 val hexOrientation: LayoutOrientation = LAYOUT_FLAT, hexOffset: Offset = Offset.EVEN) {
 
     var hexPixelWidth by Delegates.notNull<Int>()
     var hexPixelHeight by Delegates.notNull<Int>()
@@ -16,22 +20,16 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
     lateinit var origin: Point
 
     init {
-        println("Hex size $hexSize")
         if (hexOrientation == LAYOUT_FLAT) {
             hexPixelWidth = hexSize * 2
-            hexPixelHeight = (kotlin.math.sqrt(3.0) * hexSize).toInt()
+            hexPixelHeight = (sqrt(3.0) * hexSize).toInt()
         } else if (hexOrientation == LAYOUT_POINTY) {
-            hexPixelWidth = (kotlin.math.sqrt(3.0) * hexSize).toInt()
+            hexPixelWidth = (sqrt(3.0) * hexSize).toInt()
             hexPixelHeight = hexSize * 2
         } else {
             throw IllegalArgumentException("Invalid layout orientation: $hexOrientation.")
         }
         setMeasurements()
-
-        println("hexPixelWidth $hexPixelWidth")
-        println("hexPixelHeight $hexPixelHeight")
-        println("gridWidth $gridWidth")
-        println("gridHeight $gridHeight")
     }
 
     /**
@@ -51,18 +49,8 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
      * layout, this means the y axis; for a pointy layout, it means the x axis).  See also getLongGridLength.
      */
     private fun getShortGridLength(maxPixels: Int, longGridLength: Int): Pair<Int, Int> {
-        var numHexes: Int
-        var gridPixelLength: Int
-        numHexes = ((maxPixels - (0.5 * hexSize * sqrt(3.0))) / (hexSize * sqrt(3.0))).toInt()
-        gridPixelLength = ((numHexes * hexSize * sqrt(3.0)) + (0.5 * hexSize * sqrt(3.0))).toInt()
-
-        /*if (longGridLength % 2 == 0) {
-            numHexes = (maxPixels / (hexSize * sqrt(3.0))).toInt()
-            gridPixelLength = (numHexes * hexSize * sqrt(3.0)).toInt()
-        } else {
-            numHexes = ((maxPixels - (0.5 * hexSize * sqrt(3.0))) / (hexSize * sqrt(3.0))).toInt()
-            gridPixelLength = ((numHexes * hexSize * sqrt(3.0)) + (0.5 * hexSize * sqrt(3.0))).toInt()
-        }*/
+        val numHexes = ((maxPixels - (0.5 * hexSize * sqrt(3.0))) / (hexSize * sqrt(3.0))).toInt()
+        val gridPixelLength = ((numHexes * hexSize * sqrt(3.0)) + (0.5 * hexSize * sqrt(3.0))).toInt()
         return Pair(numHexes, gridPixelLength)
     }
 
@@ -84,8 +72,6 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
         horizontalMargin = imageWidth - widthMeasurements.second
         verticalMargin = imageHeight - heightMeasurements.second
         origin = Point((horizontalMargin + hexPixelWidth) / 2.0, (verticalMargin + hexPixelHeight) / 2.0)
-        //origin = Point(50.0, 50.0)
-        println("Origin $origin")
     }
     val hexLayout = Layout(hexOrientation, Point(hexSize.toDouble(), hexSize.toDouble()), origin)
 

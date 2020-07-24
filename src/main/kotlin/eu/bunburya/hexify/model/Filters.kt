@@ -4,6 +4,8 @@ import javafx.scene.paint.Color
 
 object Filter {
 
+    // TODO:  Convert to base class, like HexAggregator, which takes hexified image as an input
+
     val availableFilters = mutableMapOf(
         "grayscale" to this::grayscale,
         "negative" to this::negative

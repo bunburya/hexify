@@ -1,27 +1,30 @@
 package eu.bunburya.hexify.controller
 
 import eu.bunburya.hexify.model.Hexifier
-import eu.bunburya.hexify.view.DualImageView
+import eu.bunburya.hexify.view.ImageContainerView
 import eu.bunburya.hexify.view.InputImageView
 import eu.bunburya.hexify.view.OutputImageView
-import javafx.beans.value.ObservableValue
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import tornadofx.Controller
-import tornadofx.rebindOnChange
-import tornadofx.setValue
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
+enum class ViewMode {
+    INPUT,
+    OUTPUT,
+    DUAL
+}
+
 class ImageController: Controller() {
 
     private val mainController: MainController by inject()
-
     private val inputImageView: InputImageView by inject()
     private val outputImageView: OutputImageView by inject()
-    private val dualImageView: DualImageView by inject()
+    private val imageContainerView: ImageContainerView by inject()
 
+    val initialViewMode = ViewMode.INPUT
     lateinit var hexifier: Hexifier
 
     var imageWidth = 0
@@ -48,6 +51,11 @@ class ImageController: Controller() {
             }
             outputImage = null
         }
+
+    init {
+        println("Initialising ImageController.")
+        imageContainerView.viewMode = initialViewMode
+    }
 
     fun loadImage(file: String? = mainController.currentFile) {
         if (file == null) {

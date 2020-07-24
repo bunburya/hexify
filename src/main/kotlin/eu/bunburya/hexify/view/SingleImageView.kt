@@ -16,7 +16,7 @@ abstract class SingleImageView(title: String): View(title){
 
     fun clearImage() {
         println("Clearing")
-        getChildList()?.clear() // TODO: Get to work
+        imageNode.getChildList()?.clear() // TODO: Get to work
     }
 
     protected fun showOverlay(group: Group) {

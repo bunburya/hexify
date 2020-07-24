@@ -3,20 +3,12 @@ package eu.bunburya.hexify.controller
 import eu.bunburya.hexify.model.Config
 import eu.bunburya.hexify.model.Filter
 import eu.bunburya.hexify.model.HexAggregator
-import eu.bunburya.hexify.model.Hexifier
 import eu.bunburya.hexify.view.ConfigView
-import eu.bunburya.hexify.view.DualImageView
 import eu.bunburya.hexify.view.MainView
-import javafx.embed.swing.SwingFXUtils
-import javafx.scene.image.Image
-import javafx.scene.image.WritableImage
 import javafx.stage.FileChooser
 import tornadofx.Controller
 import tornadofx.FileChooserMode
 import tornadofx.chooseFile
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
 
 class MainController: Controller() {
 

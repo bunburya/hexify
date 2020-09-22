@@ -1,11 +1,15 @@
 package eu.bunburya.hexify.view
 
 import eu.bunburya.hexify.controller.ImageController
+import eu.bunburya.hexify.model.PolygonTile
+import eu.bunburya.hexify.model.Tile
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
+
+class TileTypeNotImplementedError(msg: String): Exception(msg)
 
 abstract class SingleImageView(title: String): View(title){
 
@@ -19,16 +23,24 @@ abstract class SingleImageView(title: String): View(title){
         imageNode.getChildList()?.clear() // TODO: Get to work
     }
 
+    private fun drawTileOutline(group: Group, polygonTile: PolygonTile) {
+        group.polygon(*polygonTile.points.toTypedArray()) {
+            stroke = Color.WHITE
+            strokeWidth = 0.5
+            fill = null
+            //fill = controller.getCellColor(range, valueFunc(cell))
+        }
+    }
+
+    private fun drawTileOutline(group: Group, tile: Tile) {
+        throw TileTypeNotImplementedError(
+            "No method implemented to draw tiles of type \"${tile::class.simpleName}\"."
+        )
+    }
+
     protected fun showOverlay(group: Group) {
-        var points: Array<Double>
-        for (h in imageController.hexifier.hexOverlay.hexes) {
-            points = Array<Double>(12) { i -> imageController.hexifier.hexOverlay.hexLayout.polygonCorners(h).flatten()[i] }
-            group.polygon(*points) {
-                stroke = Color.WHITE
-                strokeWidth = 0.5
-                fill = null
-                //fill = controller.getCellColor(range, valueFunc(cell))
-            }
+        for (t in imageController.mosaifier.mosaic.tiles) {
+            drawTileOutline(group, t)
         }
     }
 

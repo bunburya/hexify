@@ -1,9 +1,7 @@
 package eu.bunburya.hexify.controller
 
-import eu.bunburya.hexify.model.Config
-import eu.bunburya.hexify.model.Filter
-import eu.bunburya.hexify.model.HexAggregator
-import eu.bunburya.hexify.view.ConfigView
+import eu.bunburya.hexify.model.*
+import eu.bunburya.hexify.view.MainConfigView
 import eu.bunburya.hexify.view.MainView
 import javafx.stage.FileChooser
 import tornadofx.Controller
@@ -15,10 +13,12 @@ class MainController: Controller() {
     private val imageController: ImageController by inject()
 
     private val mainView: MainView by inject()
-    private val configView: ConfigView by inject()
+    private val mainConfigView: MainConfigView by inject()
 
-    val userConfig = Config()
-    val availableAggregators = HexAggregator.availableAggregators
+    val userConfig = MainConfig()
+    var mosaicConfig = MosaicConfig.factory(userConfig.mosaicType)
+    val availableMosaicTypes = Mosaic.availableTypes
+    val availableAggregators = ColorAggregator.availableAggregators
     val availableFilters = Filter.availableFilters
 
     var currentFile: String? = null
@@ -64,11 +64,11 @@ class MainController: Controller() {
     }
 
     fun hexify() {
-        imageController.hexify()
+        imageController.mosaify()
     }
 
     fun launchConfig() {
-        configView.openWindow()
+        mainConfigView.openWindow()
     }
 
     fun clearAll() {

@@ -1,9 +1,22 @@
 package eu.bunburya.hexify.model
 
-class Config {
+import eu.bunburya.hexify.model.hex.HexConfig
 
-    var hexSize = 15
-    var hexAggregator = "mode"
+class MainConfig {
+
+    var mosaicType = "hex"
+    var aggregatorMethod = "mode"
     var filters: MutableList<String> = mutableListOf()
 
+}
+
+interface MosaicConfig {
+    companion object {
+        fun factory(type: String): MosaicConfig {
+            return when (type) {
+                "hex" -> HexConfig()
+                else -> throw IllegalArgumentException("$type not a valid mosaic type.")
+            }
+        }
+    }
 }

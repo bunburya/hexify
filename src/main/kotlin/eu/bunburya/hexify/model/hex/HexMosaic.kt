@@ -1,16 +1,23 @@
-package eu.bunburya.hexify.model
+package eu.bunburya.hexify.model.hex
 
 import eu.bunburya.hexagons.*
+import eu.bunburya.hexify.model.Mosaic
+import eu.bunburya.hexify.model.PolygonTile
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
-/**
- * A visible set of hexagons that can overlay an image.
- */
-class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10,
-                 val hexOrientation: LayoutOrientation = LAYOUT_FLAT, hexOffset: Offset = Offset.EVEN) {
+class BadOrientationError(msg: String): Exception(msg)
 
+class HexMosaic(
+    config: HexConfig,
+    private val imageWidth: Int,
+    private val imageHeight:Int
+): Mosaic {
+
+
+    var hexOrientation: LayoutOrientation
+    var hexSize by Delegates.notNull<Int>()
     var hexPixelWidth by Delegates.notNull<Int>()
     var hexPixelHeight by Delegates.notNull<Int>()
     var gridWidth by Delegates.notNull<Int>()
@@ -20,6 +27,14 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
     lateinit var origin: Point
 
     init {
+        hexSize = config.hexSize
+        if (config.orientation == "pointy") {
+            hexOrientation = LAYOUT_POINTY
+        } else if (config.orientation == "flat") {
+            hexOrientation = LAYOUT_FLAT
+        } else {
+            throw BadOrientationError("Orientation must be \"pointy\" or \"flat\", not ${config.orientation}.")
+        }
         if (hexOrientation == LAYOUT_FLAT) {
             hexPixelWidth = hexSize * 2
             hexPixelHeight = (sqrt(3.0) * hexSize).toInt()
@@ -54,9 +69,9 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
         return Pair(numHexes, gridPixelLength)
     }
 
-    fun setMeasurements() {
-        var widthMeasurements: Pair<Int, Int>
-        var heightMeasurements: Pair<Int, Int>
+    private fun setMeasurements() {
+        val widthMeasurements: Pair<Int, Int>
+        val heightMeasurements: Pair<Int, Int>
         if (hexOrientation == LAYOUT_FLAT) {
             // Hexes are longer width-ways
             widthMeasurements = getLongGridLength(imageWidth)
@@ -73,16 +88,20 @@ class HexOverlay(val imageWidth: Int, val imageHeight:Int, val hexSize: Int = 10
         verticalMargin = imageHeight - heightMeasurements.second
         origin = Point((horizontalMargin + hexPixelWidth) / 2.0, (verticalMargin + hexPixelHeight) / 2.0)
     }
-    val hexLayout = Layout(hexOrientation, Point(hexSize.toDouble(), hexSize.toDouble()), origin)
+    private val hexLayout = Layout(hexOrientation, Point(hexSize.toDouble(), hexSize.toDouble()), origin)
 
-    val hexes = MapBuilder.rectangle(gridWidth, gridHeight, "qr")
+    private fun hexToTile(hex: Hex): PolygonTile
+            = PolygonTile(hexLayout.polygonCorners(hex).flatten())
 
-    /**
-     * Return the Hex which contains the point (x, y).
-     */
-    fun getHex(x: Int, y: Int): Hex? {
+    override val tiles
+            = MapBuilder.rectangle(gridWidth, gridHeight, "qr")
+                .map(this::hexToTile)
+                .toMutableSet()
+
+    override fun getTile(x: Int, y: Int): PolygonTile? {
         val hex = hexLayout.pixelToHex(Point(x.toDouble(), y.toDouble())).hexRound()
-        return if (hex in hexes) hex else null
+        val hexTile = hexToTile(hex)
+        return if (hexTile in tiles) hexTile else null
     }
 
 }

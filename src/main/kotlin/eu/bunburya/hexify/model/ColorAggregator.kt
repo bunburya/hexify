@@ -1,11 +1,10 @@
 package eu.bunburya.hexify.model
 
 import javafx.scene.paint.Color
-import java.lang.Math.pow
 import kotlin.math.max
 import kotlin.math.min
 
-interface HexAggregator {
+interface ColorAggregator {
 
     companion object {
 
@@ -15,7 +14,7 @@ interface HexAggregator {
             "count",
             "range"
         )
-        fun factory(name: String): HexAggregator {
+        fun factory(name: String): ColorAggregator {
             return when (name) {
                 "mean" -> MeanAggregator()
                 "mode" -> ModeAggregator()
@@ -30,7 +29,7 @@ interface HexAggregator {
     val aggregateColor: Color
 }
 
-class MeanAggregator: HexAggregator {
+class MeanAggregator: ColorAggregator {
 
     private var totalRed = 0.0
     private var totalGreen = 0.0
@@ -50,7 +49,7 @@ class MeanAggregator: HexAggregator {
     }
 }
 
-class ModeAggregator: HexAggregator {
+class ModeAggregator: ColorAggregator {
 
     private val colorCount: MutableMap<Color, Int> = mutableMapOf()
 
@@ -74,7 +73,7 @@ class ModeAggregator: HexAggregator {
     }
 }
 
-class CountAggregator: HexAggregator {
+class CountAggregator: ColorAggregator {
     private val uniqueColors: MutableSet<Color> = mutableSetOf()
     private var pixelCount = 0
     override fun add(color: Color) {
@@ -88,7 +87,7 @@ class CountAggregator: HexAggregator {
     }
 }
 
-class RangeAggregator: HexAggregator {
+class RangeAggregator: ColorAggregator {
 
     private val colors: MutableList<Color> = mutableListOf()
     private var pixelCount = 0

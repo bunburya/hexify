@@ -1,6 +1,6 @@
 package eu.bunburya.hexify.controller
 
-import eu.bunburya.hexify.model.Hexifier
+import eu.bunburya.hexify.model.Mosaifier
 import eu.bunburya.hexify.view.ImageContainerView
 import eu.bunburya.hexify.view.InputImageView
 import eu.bunburya.hexify.view.OutputImageView
@@ -25,7 +25,7 @@ class ImageController: Controller() {
     private val imageContainerView: ImageContainerView by inject()
 
     val initialViewMode = ViewMode.INPUT
-    lateinit var hexifier: Hexifier
+    lateinit var mosaifier: Mosaifier
 
     var imageWidth = 0
     var imageHeight = 0
@@ -47,7 +47,7 @@ class ImageController: Controller() {
             } else {
                 imageWidth = new.width.toInt()
                 imageHeight = new.height.toInt()
-                hexifier = Hexifier(new, mainController.userConfig)
+                mosaifier = Mosaifier(new, mainController.userConfig, mainController.mosaicConfig)
             }
             outputImage = null
         }
@@ -66,8 +66,8 @@ class ImageController: Controller() {
         mainController.currentFile = file
     }
 
-    fun hexify() {
-        outputImage = hexifier.hexify()
+    fun mosaify() {
+        outputImage = mosaifier.mosaify()
     }
 
     fun writeImage(fileName: String? = mainController.currentFile) {

@@ -3,6 +3,7 @@ package eu.bunburya.hexify.controller
 import eu.bunburya.hexify.model.*
 import eu.bunburya.hexify.view.MainConfigView
 import eu.bunburya.hexify.view.MainView
+import eu.bunburya.hexify.view.StatusBarView
 import javafx.stage.FileChooser
 import tornadofx.Controller
 import tornadofx.FileChooserMode
@@ -13,10 +14,15 @@ class MainController: Controller() {
     private val imageController: ImageController by inject()
 
     private val mainView: MainView by inject()
+    private val statusBarView: StatusBarView by inject()
     private val mainConfigView: MainConfigView by inject()
 
     val userConfig = MainConfig()
     var mosaicConfig = MosaicConfig.factory(userConfig.mosaicType)
+        set(new) {
+            field = new
+            imageController.mosaifier.mosaicConfig = new
+        }
     val availableMosaicTypes = Mosaic.availableTypes
     val availableAggregators = ColorAggregator.availableAggregators
     val availableFilters = Filter.availableFilters
@@ -47,24 +53,30 @@ class MainController: Controller() {
     fun openFile() {
         val fileList = chooseFile("Choose a image to load.", filters=validFileTypes)
         if (fileList.isNotEmpty()) {
-            imageController.loadImage(fileList[0].toURI().toString())
+            val fromFile = fileList[0].toURI().toString()
+            imageController.loadImage(fromFile)
+            status("Loaded image at $fromFile.")
         }
     }
 
     fun saveFile() {
-        val fileList = chooseFile("Choose save location.", filters=validFileTypes,
-            mode = FileChooserMode.Save)
+        val fileList = chooseFile(
+            "Choose save location.", filters = validFileTypes,
+            mode = FileChooserMode.Save
+        )
         if (fileList.isNotEmpty()) {
-            imageController.writeImage(fileList[0].toURI().toString())
+            val toFile = fileList[0].toURI().toString()
+            imageController.writeImage(toFile)
+            status("Saved image to $toFile.")
         }
     }
 
-    fun rerun() {
-        imageController.loadImage()
-    }
-
-    fun hexify() {
-        imageController.mosaify()
+    fun mosaify() {
+        try {
+            imageController.mosaify()
+        } catch (e: UninitializedPropertyAccessException) {
+            status("Must provide input image to mosaify.")
+        }
     }
 
     fun launchConfig() {
@@ -78,5 +90,9 @@ class MainController: Controller() {
 
     fun quit() {
         System.exit(0)
+    }
+
+    fun status(text: String = "") {
+        statusBarView.update(text)
     }
 }

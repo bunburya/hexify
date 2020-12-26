@@ -1,8 +1,18 @@
 package eu.bunburya.hexify.view
 
+import javafx.scene.control.Label
 import tornadofx.*
 
 class StatusBarView : View("Status Bar") {
 
-    override val root = hbox ()
+    private var statusLabel: Label by singleAssign()
+
+    fun update(text: String) {
+        statusLabel.text = text
+    }
+
+    override val root = hbox {
+        statusLabel = label("Welcome to Mosaify.")
+    }
+
 }

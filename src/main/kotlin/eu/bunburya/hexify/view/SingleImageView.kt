@@ -103,6 +103,7 @@ class OutputImageView(): SingleImageView("Output Image") {
                     prefHeight = imageController.imageHeight.toDouble()
                 }
             }
+            println("OutputImageView now showing image $image with dimensions ${image.width}x${image.height}")
         } else {
             println("outputImage is null")
             clearImage()

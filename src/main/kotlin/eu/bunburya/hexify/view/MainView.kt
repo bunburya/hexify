@@ -25,15 +25,9 @@ class MainView : View("Hexify") {
                         mainController.launchConfig()
                     }
                 }
-                button("Hexify") {
+                button("Mosaify") {
                     action {
-                        mainController.hexify()
-                    }
-                }
-                // TODO:  Change this to "Hexify"
-                button("Re-run") {
-                    action {
-                        mainController.rerun()
+                        mainController.mosaify()
                     }
                 }
                 button("Save image") {
@@ -50,7 +44,6 @@ class MainView : View("Hexify") {
         }
 
         center(ImageContainerView::class)
-        //center(InputImageView::class)
 
         bottom(StatusBarView::class)
 

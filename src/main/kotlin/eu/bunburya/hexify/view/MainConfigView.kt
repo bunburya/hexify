@@ -1,6 +1,8 @@
 package eu.bunburya.hexify.view
 
 import eu.bunburya.hexify.controller.MainController
+import eu.bunburya.hexify.model.Mosaic
+import eu.bunburya.hexify.model.MosaicConfig
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.scene.control.ComboBox
@@ -57,8 +59,10 @@ class MainConfigView : View("Hexify -> Configure") {
                     mainController.userConfig.apply {
                         aggregatorMethod = aggregatorDropdown.value
                         filters = filterListView.selectionModel.selectedItems
+                        mosaicType = mosaicTypeDropdown.value
                     }
                     mosaicConfigView.onSubmit()
+                    //mainController.updateMosaic()
                     close()
                 }
             }
@@ -71,10 +75,13 @@ class MainConfigView : View("Hexify -> Configure") {
     }
 
     init {
-        mosaicConfigView = MosaicConfigView.factory(mosaicTypeDropdown.value, mainController.mosaicConfig)
+        mosaicConfigView = MosaicConfigView.factory(mosaicTypeDropdown.value)
         root.add(mosaicConfigView)
         selectedMosaicType.onChange {
-            mosaicConfigView.replaceWith(MosaicConfigView.factory(mosaicTypeDropdown.value, mainController.mosaicConfig))
+            println("Replacing mosaic config view to $it.  Dropdown value is ${mosaicTypeDropdown.value}.")
+            val newMosaicConfigView = MosaicConfigView.factory(mosaicTypeDropdown.value)
+            mosaicConfigView.replaceWith(newMosaicConfigView)
+            mosaicConfigView = newMosaicConfigView
         }
     }
 

@@ -1,6 +1,5 @@
 package eu.bunburya.hexify.model.hex
 
-import eu.bunburya.hexify.model.MainConfig
 import eu.bunburya.hexify.model.MosaicConfig
 
 data class HexConfig(

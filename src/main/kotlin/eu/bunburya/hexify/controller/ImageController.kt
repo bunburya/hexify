@@ -25,7 +25,7 @@ class ImageController: Controller() {
     private val imageContainerView: ImageContainerView by inject()
 
     val initialViewMode = ViewMode.INPUT
-    lateinit var mosaifier: Mosaifier
+    val mosaifier = Mosaifier(mainController.userConfig, mainController.mosaicConfig)
 
     var imageWidth = 0
     var imageHeight = 0
@@ -33,10 +33,11 @@ class ImageController: Controller() {
 
     var outputImage: Image? = null
         set(new) {
-            println("Setting outputImage to $new")
+            println("Setting outputImage to $new with dimensions ${new?.width}x${new?.height}")
             field = new
             refreshAll()
         }
+
     var inputImage: Image? = null
         set(new) {
             println("Setting inputImage to $new")
@@ -47,7 +48,7 @@ class ImageController: Controller() {
             } else {
                 imageWidth = new.width.toInt()
                 imageHeight = new.height.toInt()
-                mosaifier = Mosaifier(new, mainController.userConfig, mainController.mosaicConfig)
+                mosaifier.inputImage = new
             }
             outputImage = null
         }

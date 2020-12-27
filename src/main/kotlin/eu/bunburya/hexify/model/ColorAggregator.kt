@@ -10,6 +10,7 @@ interface ColorAggregator {
 
         val availableAggregators = arrayListOf(
             "mean",
+            "median",
             "mode",
             "count",
             "range"
@@ -17,6 +18,7 @@ interface ColorAggregator {
         fun factory(name: String): ColorAggregator {
             return when (name) {
                 "mean" -> MeanAggregator()
+                "median" -> MedianAggregator()
                 "mode" -> ModeAggregator()
                 "count" -> CountAggregator()
                 "range" -> RangeAggregator()
@@ -70,6 +72,32 @@ class ModeAggregator: ColorAggregator {
                 1.0
             )
         }
+    }
+}
+
+class MedianAggregator: ColorAggregator {
+
+    private val redValues = mutableListOf<Double>()
+    private val greenValues = mutableListOf<Double>()
+    private val blueValues = mutableListOf<Double>()
+
+    private fun median(values: Collection<Double>): Double {
+        val sorted = values.sorted()
+        val n = sorted.size / 2
+        return if (sorted.size % 2 == 0) (sorted[n] + sorted[n+1]) / 2 else sorted[n]
+    }
+
+    private val medianRed: Double get() = median(redValues)
+    private val medianGreen: Double get() = median(greenValues)
+    private val medianBlue: Double get() = median(blueValues)
+
+
+    override val aggregateColor: Color get() = Color(medianRed, medianGreen, medianBlue, 1.0)
+
+    override fun add(color: Color) {
+        redValues.add(color.red)
+        greenValues.add(color.green)
+        blueValues.add(color.blue)
     }
 }
 

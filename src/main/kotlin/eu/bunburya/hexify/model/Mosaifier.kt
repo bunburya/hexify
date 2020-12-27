@@ -77,6 +77,7 @@ class Mosaifier(private val config: MainConfig, initialMosaicConfig: MosaicConfi
                 tile = mosaic.getTile(i, j)
                 if (tile == null) {
                     //println("No hex found for ($i, $j).")
+                    // TODO: Should probably just not set anything here.
                     writer.setColor(i, j, emptyColor)
                 } else {
                     color = aggregates[tile] ?: emptyColor

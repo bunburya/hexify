@@ -23,7 +23,7 @@ class MainController: Controller() {
             field = new
             imageController.mosaifier.mosaicConfig = new
         }
-    val availableMosaicTypes = Mosaic.availableTypes
+    val availableMosaicTypes = Mosaic.availableTypes.keys
     val availableAggregators = ColorAggregator.availableAggregators
     val availableFilters = Filter.availableFilters
 

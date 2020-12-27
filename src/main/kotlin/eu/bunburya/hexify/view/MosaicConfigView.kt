@@ -2,6 +2,7 @@ package eu.bunburya.hexify.view
 
 import eu.bunburya.hexify.controller.MainController
 import eu.bunburya.hexify.model.MosaicConfig
+import eu.bunburya.hexify.model.brick.BrickConfig
 import eu.bunburya.hexify.model.hex.HexConfig
 import eu.bunburya.hexify.model.square.SquareConfig
 import javafx.collections.FXCollections
@@ -18,6 +19,7 @@ abstract class MosaicConfigView(title: String? = null): View(title) {
             return when (type) {
                 "hex" -> HexMosaicConfigView(HexConfig())
                 "square" -> SquareMosaicConfigView(SquareConfig())
+                "brick" -> BrickMosaicConfigView(BrickConfig())
                 else -> throw IllegalArgumentException("$type not a valid mosaic type.")
             }
         }
@@ -70,6 +72,27 @@ class SquareMosaicConfigView(private var existingConfig: SquareConfig? = null):
     override fun onSubmit() {
         mainController.mosaicConfig = SquareConfig(
             squareSize = squareSizeSpinner.value
+        )
+    }
+
+}
+
+class BrickMosaicConfigView(private var existingConfig: BrickConfig? = null):
+    MosaicConfigView("Configure BrickMosaic") {
+
+    private val mainController: MainController by inject()
+
+    var brickHeightSpinner: Spinner<Int> by singleAssign()
+
+    override val root = fieldset("Configure brick mosaic") {
+        field("Brick height in pixels (width will be twice this)") {
+            brickHeightSpinner = spinner(1, 40, existingConfig?.brickHeight)
+        }
+    }
+
+    override fun onSubmit() {
+        mainController.mosaicConfig = BrickConfig(
+            brickHeight = brickHeightSpinner.value
         )
     }
 

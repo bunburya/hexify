@@ -11,8 +11,8 @@ class SquareMosaic(
 ): Mosaic {
 
     private val squareSize = config.squareSize
-    private val startX = (imageWidth % config.squareSize) % 2
-    private val startY = (imageHeight % config.squareSize % 2)
+    private val startX = (imageWidth % config.squareSize) / 2
+    private val startY = (imageHeight % config.squareSize) / 2
     private val numSquaresX = imageWidth / config.squareSize
     private val numSquaresY = imageHeight / config.squareSize
     private val endX = startX + (numSquaresX * config.squareSize)
